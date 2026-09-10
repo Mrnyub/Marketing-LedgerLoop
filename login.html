@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in — LedgerLoop</title>
+  <style>
+    :root {
+      --desk: #1B2A22; --desk-2: #121D17; --paper: #F7F2E4; --paper-2: #F1EAD5;
+      --ink: #211E17; --ink-soft: #726B5A; --rule: #DCD0AC; --brass: #A07A26;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, serif;
+    }
+    body { margin: 0; padding: 0; font-family: var(--sans); background: linear-gradient(175deg, var(--desk) 0%, var(--desk-2) 100%); color: #F7F2E4; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .auth-card { background: var(--paper); color: var(--ink); width: 100%; max-width: 400px; border-radius: 8px; padding: 40px 32px; box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+    .brand { text-align: center; margin-bottom: 32px; }
+    .mark { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 4px; background: linear-gradient(160deg, #C9A24C, #8A6A22); font-family: var(--serif); font-weight: 700; font-size: 18px; color: #1B1607; margin-bottom: 16px; }
+    .auth-card h2 { margin: 0 0 8px 0; font-family: var(--serif); font-size: 24px; text-align: center; }
+    .auth-card p.sub { color: var(--ink-soft); font-size: 14px; text-align: center; margin: 0 0 24px 0; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+    .field input { padding: 10px 12px; border: 1px solid var(--rule); border-radius: 4px; font-size: 14px; background: var(--paper); color: var(--ink); }
+    .field input:focus { outline: 2px solid var(--brass); outline-offset: 1px; border-color: transparent; }
+    .btn { width: 100%; padding: 12px; background: var(--brass); color: #211703; border: none; border-radius: 4px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+    .btn:hover { background: #B78D33; }
+    .toggle-text { text-align: center; margin-top: 24px; font-size: 13.5px; color: var(--ink-soft); }
+    .toggle-text a { color: var(--brass); font-weight: 600; text-decoration: none; cursor: pointer; }
+    .toggle-text a:hover { text-decoration: underline; }
+    .error-msg { color: #D9534F; font-size: 13px; text-align: center; margin-bottom: 16px; min-height: 18px; font-weight: 500; }
+    #view-register { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="brand"><div class="mark">LL</div></div>
+    
+    <!-- Login View -->
+    <div id="view-login">
+      <h2>Welcome back</h2>
+      <p class="sub">Enter your credentials to access your ledger.</p>
+      <div class="error-msg" id="login-error"></div>
+      <form id="form-login">
+        <div class="field"><label>Username</label><input type="text" id="login-user" required></div>
+        <div class="field"><label>Password</label><input type="password" id="login-pass" required></div>
+        <button type="submit" class="btn">Log In</button>
+      </form>
+      <div class="toggle-text">Don't have an account? <a onclick="toggleView('register')">Create one</a></div>
+    </div>
+
+    <!-- Register View -->
+    <div id="view-register">
+      <h2>Create an account</h2>
+      <p class="sub">Start tracking your 5 financial pillars.</p>
+      <div class="error-msg" id="register-error"></div>
+      <form id="form-register">
+        <div class="field"><label>Full Name</label><input type="text" id="reg-name" placeholder="e.g. B. Lowel Jay Arnaiz" required></div>
+        <div class="field"><label>Username</label><input type="text" id="reg-user" required></div>
+        <div class="field"><label>Password</label><input type="password" id="reg-pass" required></div>
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+      <div class="toggle-text">Already have an account? <a onclick="toggleView('login')">Log in</a></div>
+    </div>
+  </div>
+
+  <script>
+    function toggleView(view) {
+      document.getElementById('view-login').style.display = view === 'login' ? 'block' : 'none';
+      document.getElementById('view-register').style.display = view === 'register' ? 'block' : 'none';
+      document.getElementById('login-error').textContent = '';
+      document.getElementById('register-error').textContent = '';
+    }
+
+    // Load users from storage or initialize empty array
+    let users = JSON.parse(localStorage.getItem('ledgerloop_users')) || [];
+
+    document.getElementById('form-register').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('reg-user').value.trim();
+      const pass = document.getElementById('reg-pass').value.trim();
+      
+      if (users.find(u => u.username === user)) {
+        document.getElementById('register-error').textContent = 'Username is already taken.';
+        return;
+      }
+      
+      users.push({ username: user, password: pass });
+      localStorage.setItem('ledgerloop_users', JSON.stringify(users));
+      
+      // Auto-login after registration
+      localStorage.setItem('ledgerloop_session', user);
+      window.location.href = 'app.html';
+    });
+
+    document.getElementById('form-login').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+      
+      const foundUser = users.find(u => u.username === user && u.password === pass);
+      
+      if (foundUser) {
+        localStorage.setItem('ledgerloop_session', user);
+        window.location.href = 'app.html';
+      } else {
+        document.getElementById('login-error').textContent = 'Invalid username or password.';
+      }
+    });
+  </script>
+</body>
+</html>
