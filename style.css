@@ -224,3 +224,78 @@ td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important; transition:none !important;}
 }
+/* ---------- Dark Mode Overrides ---------- */
+[data-theme="dark"] {
+  --paper: #1A1A1A;
+  --paper-2: #242424;
+  --ink: #EAEAEA;
+  --ink-soft: #A0A0A0;
+  --rule: #3D3D3D;
+  --rule-soft: #2E2E2E;
+  --desk: #0B110E;
+  --desk-2: #070B09;
+  --green: #459A72;
+  --red: #D9534F;
+  --brass: #C9A24C;
+  --brass-dark: #A07A26;
+  --navy: #4B6E94;
+}
+
+[data-theme="dark"] .sidebar {
+  border-right: 1px solid var(--rule);
+}
+[data-theme="dark"] input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+/* ---------- Sidebar Bottom Actions & Mobile Menu Fix ---------- */
+.sidebar-bottom-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 10px;
+}
+
+@media (max-width: 880px) {
+  /* Force sidebar into a horizontal row */
+  .sidebar {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+  }
+  
+  /* Align navigation groups and bottom actions side-by-side */
+  .sidebar nav, .sidebar-bottom-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    gap: 0 !important;
+  }
+  
+  /* Force all buttons to have the icon-on-top layout */
+  .sidebar .navbtn {
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 12px 16px !important;
+    min-width: 85px !important;
+    border-left: none !important;
+    border-top: 3px solid transparent !important;
+    background: transparent !important;
+    color: #CBD9CE !important;
+    border-radius: 0 !important;
+  }
+  
+  .sidebar .navbtn.active {
+    border-top-color: var(--brass) !important;
+    background: rgba(160,122,38,.16) !important;
+    color: #F7F2E4 !important;
+  }
+}
