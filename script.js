@@ -1,6 +1,28 @@
 (function(){
 "use strict";
 
+/* ================= AUTHENTICATION CHECK ================= */
+const sessionUser = localStorage.getItem("ledgerloop_session");
+if (!sessionUser) {
+  // If no user is logged in, boot them back to the login screen
+  window.location.href = "login.html";
+}
+
+// Make the storage key unique to the logged-in user
+const STORAGE_KEY = "ledgerloop_data_" + sessionUser;
+
+// Handle the Logout button click
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("btn-logout");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("ledgerloop_session");
+      window.location.href = "login.html";
+    });
+  }
+});
+
+
 /* State */
 const state = {
   income: [],
@@ -23,15 +45,22 @@ function todayISO(){ return new Date().toISOString().slice(0,10); }
 const titles = {
   dashboard:["Dashboard","Income, spending, savings, investments, and protection, in one place."],
   reports:["Weekly / Monthly Report","Income vs. spending broken down by period."],
+  transactions:["Summary of Transactions","A master chronological ledger of your financial activity."],
+  dashboard:["Dashboard","Income, spending, savings, investments, and protection, in one place."],
+  reports:["Weekly / Monthly Report","Income vs. spending broken down by period."],
   income:["Pillar 1 · Income","Log every peso coming in."],
   expenses:["Pillar 2 · Spending","Log expenses and compare them to your budget."],
   savings:["Pillar 3 · Savings & Goals","Set targets and track deposits toward them."],
   investments:["Pillar 4 · Investment","Track what you've invested and what it's worth now."],
   protection:["Pillar 5 · Protection","Track insurance and coverage that protect you financially."]
 };
-
 document.querySelectorAll(".navbtn").forEach(btn=>{
-  btn.addEventListener("click", ()=> showView(btn.dataset.view));
+  btn.addEventListener("click", ()=> {
+    // Only try to switch pages if the button actually has a destination
+    if (btn.dataset.view) {
+      showView(btn.dataset.view);
+    }
+  });
 });
 
 function showView(name){
@@ -271,6 +300,41 @@ function renderInvestReturnChart(){
   });
 }
 
+function renderTransactionsTable() {
+  const body = document.getElementById("transaction-table");
+  if (!body) return;
+
+  // Combine income, expenses, and deposits into a single array
+  let all = [];
+  
+  state.income.forEach(i => all.push({ date: i.date, type: "Income", desc: i.source, cat: i.category, amount: i.amount, sign: 1 }));
+  state.expenses.forEach(e => all.push({ date: e.date, type: "Expense", desc: e.description, cat: e.category, amount: e.amount, sign: -1 }));
+  state.deposits.forEach(d => {
+    const g = state.goals.find(x => x.id === d.goalId);
+    all.push({ date: d.date, type: "Deposit", desc: "Goal Deposit", cat: g ? g.name : "(deleted)", amount: d.amount, sign: -1 });
+  });
+
+  // Sort by date (newest first)
+  all.sort((a, b) => b.date.localeCompare(a.date));
+
+  if (!all.length) {
+    body.innerHTML = `<tr class="empty-row"><td colspan="5">No transactions found across any pillars.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = all.map(t => {
+    const color = t.sign > 0 ? "var(--green)" : (t.type === "Expense" ? "var(--red)" : "var(--navy)");
+    const prefix = t.sign > 0 ? "+" : "-";
+    return `<tr>
+      <td>${fmtDate(t.date)}</td>
+      <td><span class="tag">${t.type}</span></td>
+      <td>${escapeHtml(t.desc)}</td>
+      <td>${escapeHtml(t.cat)}</td>
+      <td class="num" style="color:${color}; font-weight:700;">${prefix}${money(t.amount)}</td>
+    </tr>`;
+  }).join("");
+}
+
 function renderReportChart(){
   const s = buildPeriodSeries(reportPeriod, 12);
   ensureChart("report","chart-report",{
@@ -457,7 +521,6 @@ function escapeHtml(str){
 }
 
 /* Local persistence (this browser tab only — export for a portable backup) */
-const STORAGE_KEY = "ledgerloop_state_v1";
 let storageAvailable = true;
 try{
   const testKey = "__ledgerloop_test__";
@@ -498,7 +561,7 @@ function safe(fn){
   try{ fn(); }catch(err){ console.warn("Render step failed (non-fatal):", fn.name, err); }
 }
 
-function renderAll(){
+function renderAll() {
   safe(renderDashboardStats);
   safe(renderFlowChart);
   safe(renderExpenseCatChart);
@@ -506,6 +569,7 @@ function renderAll(){
   safe(renderPillarsChart);
 
   safe(renderIncomeTable);
+  safe(renderTransactionsTable);
 
   safe(renderBudgetChart);
   safe(renderBudgetList);
@@ -521,7 +585,7 @@ function renderAll(){
 
   safe(renderProtectTable);
 
-  if(document.getElementById("view-reports").classList.contains("active")) safe(renderReport);
+  if (document.getElementById("view-reports").classList.contains("active")) safe(renderReport);
 
   saveToStorage();
 }
@@ -714,6 +778,45 @@ document.getElementById("file-import").addEventListener("change", e=>{
   if(restored) toast("Welcome back — your saved entries were restored");
   renderAll();
 })();
+/* ================= THEME TOGGLE ================= */
+const themeToggle = document.getElementById("theme-toggle");
+const themeIcon = document.getElementById("theme-icon");
+const themeText = document.getElementById("theme-text");
 
+function setTheme(isDark) {
+  document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+  localStorage.setItem("ledgerloop_theme", isDark ? "dark" : "light");
+  
+  if (themeToggle) {
+    themeText.textContent = isDark ? "Light Mode" : "Dark Mode";
+    themeIcon.innerHTML = isDark
+      ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+      : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+
+  // Update Chart.js default colors so charts are readable in dark mode
+  if (typeof Chart !== "undefined") {
+    Chart.defaults.color = isDark ? "#A0A0A0" : "#726B5A";
+    Chart.defaults.borderColor = isDark ? "#3D3D3D" : "#E9E0C6";
+    // Re-render charts to apply the new grid and text colors
+    renderAll();
+  }
+}
+
+// 1. Check for saved user preference, fallback to system preference
+const savedTheme = localStorage.getItem("ledgerloop_theme");
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+const isDarkInitial = savedTheme === "dark" || (!savedTheme && prefersDark);
+
+// 2. Apply theme on load
+setTheme(isDarkInitial);
+
+// 3. Listen for clicks
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const currentlyDark = document.documentElement.getAttribute("data-theme") === "dark";
+    setTheme(!currentlyDark);
+  });
+}
 })();
 
