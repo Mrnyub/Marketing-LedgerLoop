@@ -49,25 +49,54 @@
             <a href="#features" class="btn secondary large">Explore the features</a>
           </div>
         </div>
-        <div class="hero-visual">
-          <div class="mockup-window">
-            <div class="mockup-header">
-              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-            </div>
-            <div class="mockup-body">
-              <div class="mockup-stat-row">
-                <div class="m-stat"><div class="m-label">Net worth</div><div class="m-val">₱452,000</div></div>
-                <div class="m-stat"><div class="m-label">Savings rate</div><div class="m-val">24%</div></div>
+      <div class="hero-visual" style="transform: none !important;">
+          <div style="background: #F7F2E4; border-radius: 14px; padding: 24px; color: #1B2620; width: 100%; max-width: 460px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(201,162,76,0.3); font-family: var(--sans, sans-serif);">
+            
+            <!-- Window Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 12px;">
+              <div style="display: flex; gap: 6px;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #E06D53; display: inline-block;"></span>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #E5B25D; display: inline-block;"></span>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #5D9E74; display: inline-block;"></span>
               </div>
-              <div class="m-chart">
-                <div class="m-bar inc" style="height: 80%;"></div>
-                <div class="m-bar exp" style="height: 50%;"></div>
-                <div class="m-bar inc" style="height: 90%;"></div>
-                <div class="m-bar exp" style="height: 60%;"></div>
-                <div class="m-bar inc" style="height: 100%;"></div>
-                <div class="m-bar exp" style="height: 45%;"></div>
+              <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #726B5A;">Financial Health Index</span>
+            </div>
+
+            <!-- Top Indicator Cards (Ratios & Health instead of cash) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+              <div style="background: #FFFFFF; padding: 14px 16px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);">
+                <div style="font-size: 10px; font-weight: 600; color: #726B5A; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Health Score</div>
+                <div style="font-family: var(--serif, serif); font-size: 21px; font-weight: bold; color: #2E6943;">Optimal</div>
+              </div>
+              <div style="background: #FFFFFF; padding: 14px 16px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);">
+                <div style="font-size: 10px; font-weight: 600; color: #726B5A; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Pillars Tracked</div>
+                <div style="font-family: var(--serif, serif); font-size: 21px; font-weight: bold; color: #1B2620;">5 / 5</div>
               </div>
             </div>
+
+            <!-- Rising Progress / Allocation Chart -->
+            <div style="background: #FFFFFF; border-radius: 8px; padding: 18px 16px 12px 16px; border: 1px solid rgba(0,0,0,0.06);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 11.5px; font-weight: 600; color: #1B2620; text-transform: uppercase; letter-spacing: 0.03em;">Portfolio Growth Trajectory</span>
+                <span style="font-size: 11px; font-weight: 600; color: #2E6943; background: rgba(93,158,116,0.12); padding: 2px 8px; border-radius: 4px;">Active Growth</span>
+              </div>
+              
+              <!-- Rising bar graph without monetary currency -->
+              <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 110px; padding-top: 10px; border-bottom: 1px solid rgba(0,0,0,0.08);">
+                <div style="width: 12%; background: #C9A24C; height: 40%; border-radius: 4px 4px 0 0; opacity: 0.7;"></div>
+                <div style="width: 12%; background: #C9A24C; height: 55%; border-radius: 4px 4px 0 0; opacity: 0.8;"></div>
+                <div style="width: 12%; background: #5D9E74; height: 65%; border-radius: 4px 4px 0 0;"></div>
+                <div style="width: 12%; background: #5D9E74; height: 75%; border-radius: 4px 4px 0 0;"></div>
+                <div style="width: 12%; background: #2E6943; height: 90%; border-radius: 4px 4px 0 0;"></div>
+                <div style="width: 12%; background: #2E6943; height: 100%; border-radius: 4px 4px 0 0;"></div>
+              </div>
+
+              <!-- General timeline labels -->
+              <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: #726B5A; font-weight: 500;">
+                <span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span><span>Target</span><span>Goal</span>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -167,8 +196,89 @@
           <h2>About LedgerLoop</h2>
           <p>Most modern finance apps demand your bank login credentials, pull your transaction history to their servers, and bombard you with credit card offers. We believe your financial data belongs strictly to you.</p>
           <p>LedgerLoop was built as a privacy-first alternative. Everything you enter is saved locally, right in your own browser storage. There are no external databases, no hidden tracking analytics, and no bank connections. It is a pure, fast, and entirely private ledger designed to give you clarity across all five pillars of your financial life.</p>
+          <p>LedgerLoop is designed to provide a structured and accessible platform for personal financial management. It aims to help users organize and monitor their financial activities, improve their understanding of their financial position, and support informed and responsible financial decision-making.</p>
         </div>
       </div>
+      <!-- About Section Team Showcase -->
+
+<div style="max-width: 900px; margin: 60px auto; padding: 0 24px; text-align: center;">
+    <h3 style="font-family: var(--serif); font-size: 32px; margin-bottom: 8px; color: #F7F2E4;">The Development Team</h3>
+    <p style="color: #CBD9CE; font-size: 15px; margin-bottom: 48px;">Personal Finance MMEL04 Midterm Project — Group 2</p>
+    
+    <!-- Top Row: Members 1 to 4 -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px; margin-bottom: 32px;">
+      
+      <!-- Member 1 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image1.jpg" alt="Member 1" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M1';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Kiersten Kim S. Dihayco</div>
+       
+      </div>
+
+      <!-- Member 2 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image2.jpg" alt="Member 2" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M2';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Jeany Rose Cordova</div>
+        
+      </div>
+
+      <!-- Member 3 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image3.jpg" alt="Member 3" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M3';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Hershey A. Delantar</div>
+        
+      </div>
+
+      <!-- Member 4 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image4.jpg" alt="Member 4" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M4';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Marybic S. Andulana</div>
+        
+      </div>
+
+    </div>
+
+    <!-- Bottom Row: Members 5 to 7 -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px;">
+      
+      <!-- Member 5 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image5.jpg" alt="Member 5" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M5';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Trisha Mae I. Awe</div>
+        
+      </div>
+
+      <!-- Member 6 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image6.jpg" alt="Member 6" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M6';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Jona May A. Corteza</div>
+        
+      </div>
+
+      <!-- Member 7 -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #1b2620; border: 2px solid #C9A24C; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.4);">
+          <img src="image7.jpg" alt="Member 7" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.textContent='M7';">
+        </div>
+        <div style="font-size: 14.5px; font-weight: 600; color: #F7F2E4; line-height: 1.3;">Jay Mae S. Rivera</div>
+        
+      </div>
+
+    </div>
+  </div>
+      
     </section>
 
     <!-- ================= CTA SECTION ================= -->
@@ -214,6 +324,60 @@
       link.addEventListener('click', () => {
         nav.classList.remove('active');
       });
+    });
+  </script>
+ <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Check if a user is currently logged in
+      const sessionUser = localStorage.getItem("ledgerloop_session");
+
+      if (sessionUser) {
+        // 2. Change the main hero headline to welcome the user
+        const mainTitle = document.querySelector("h1");
+        if (mainTitle) {
+          mainTitle.innerHTML = `Welcome back, <span style="color: #C9A24C;">${sessionUser}</span>!`;
+          
+          const subText = mainTitle.nextElementSibling;
+          if (subText && subText.tagName === "P") {
+            subText.textContent = "Your financial dashboard is ready. Continue tracking your income, spending, savings, investments, and protection.";
+          }
+        }
+
+        // 3. Update login links and inject a Logout button
+        const loginLinks = document.querySelectorAll('a[href="login.html"]');
+        loginLinks.forEach(link => {
+          link.href = "app.html";
+          
+          if (link.textContent.includes("Log In") || link.textContent.includes("Sign Up")) {
+            link.textContent = "Go to Dashboard";
+            
+            // Create the Logout button
+            const logoutBtn = document.createElement("a");
+            logoutBtn.href = "#";
+            logoutBtn.textContent = "Log Out";
+            logoutBtn.className = link.className; // Copy existing button classes
+            
+            // Apply secondary styling so it doesn't clash with the main button
+            logoutBtn.style.background = "transparent";
+            logoutBtn.style.color = "#F7F2E4";
+            logoutBtn.style.border = "1px solid rgba(255,255,255,0.2)";
+            logoutBtn.style.marginLeft = "12px";
+            
+            // Log out logic
+            logoutBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              localStorage.removeItem("ledgerloop_session");
+              window.location.reload(); // Refresh to reset the homepage
+            });
+
+            // Insert it right next to the Go to Dashboard button
+            link.parentNode.insertBefore(logoutBtn, link.nextSibling);
+            
+          } else if (link.textContent.includes("Start tracking")) {
+            link.textContent = "Open Dashboard";
+          }
+        });
+      }
     });
   </script>
 </body>
