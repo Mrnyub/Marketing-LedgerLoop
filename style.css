@@ -318,3 +318,100 @@ td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
     color: #F7F2E4 !important;
   }
 }
+/* ---------- Print Styles for Ledger ---------- */
+@media print {
+  .sidebar, .topbar, .btn, .toast, .sidebar-bottom-actions { 
+    display: none !important; 
+  }
+  .main { 
+    padding: 0 !important; 
+    background: none !important; 
+    max-width: 100% !important; 
+  }
+  .panel { 
+    box-shadow: none !important; 
+    border: none !important; 
+    padding: 0 !important;
+  }
+  body { 
+    background: #fff !important; 
+    color: #000 !important; 
+  }
+  .tag {
+    border: 1px solid #ccc !important;
+    color: #333 !important;
+  }
+}
+/* ---------- Team Avatars ---------- */
+/* ---------- Team Avatars ---------- */
+.team-avatar {
+  width: 72px; 
+  height: 72px; 
+  border-radius: 50%; 
+  background: var(--paper-2); 
+  border: 1px solid var(--rule); 
+  margin-bottom: 12px; 
+  overflow: hidden; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  color: var(--ink-soft); 
+  font-family: var(--serif); 
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  flex-shrink: 0; /* Prevents shrinking */
+}
+
+.team-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+/* ================= PROFESSIONAL UI ANIMATIONS ================= */
+
+/* Smooth global page and container appearance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply fade-in animation to panels and home sections on load */
+.panel, section, .hero-content, .hero-visual > div {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Interactive button scale and shadow responsiveness */
+button, .btn, a.btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover, .btn:hover, a.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+button:active, .btn:active, a.btn:active {
+  transform: translateY(0);
+}
+
+/* Smooth hover scaling for team member avatars */
+.team-avatar, div[style*="border-radius: 50%"] {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.team-avatar:hover, div[style*="border-radius: 50%"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(201, 162, 76, 0.25);
+}
+
+/* Subtle tab switching and view transition smoothness */
+.view {
+  animation: fadeIn 0.3s ease-out forwards;
+}
