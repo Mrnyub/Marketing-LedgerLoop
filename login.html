@@ -89,7 +89,7 @@
       
       // Auto-login after registration
       localStorage.setItem('ledgerloop_session', user);
-      window.location.href = 'app.html';
+      window.location.href = 'index.html';
     });
 
     document.getElementById('form-login').addEventListener('submit', (e) => {
@@ -101,7 +101,7 @@
       
       if (foundUser) {
         localStorage.setItem('ledgerloop_session', user);
-        window.location.href = 'app.html';
+        window.location.href = 'index.html';
       } else {
         document.getElementById('login-error').textContent = 'Invalid username or password.';
       }
