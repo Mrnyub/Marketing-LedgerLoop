@@ -46,6 +46,11 @@ const titles = {
   dashboard:["Dashboard","Income, spending, savings, investments, and protection, in one place."],
   reports:["Weekly / Monthly Report","Income vs. spending broken down by period."],
   transactions:["Summary of Transactions","A master chronological ledger of your financial activity."],
+  guidelines:["Guidelines & Documentation","How to use the tracker, manage your data, and understand the 5 pillars."],
+  settings:["Settings","Manage your preferences, profile, and data."], 
+  dashboard:["Dashboard","Income, spending, savings, investments, and protection, in one place."],
+  reports:["Weekly / Monthly Report","Income vs. spending broken down by period."],
+  transactions:["Summary of Transactions","A master chronological ledger of your financial activity."],
   dashboard:["Dashboard","Income, spending, savings, investments, and protection, in one place."],
   reports:["Weekly / Monthly Report","Income vs. spending broken down by period."],
   income:["Pillar 1 · Income","Log every peso coming in."],
@@ -53,6 +58,7 @@ const titles = {
   savings:["Pillar 3 · Savings & Goals","Set targets and track deposits toward them."],
   investments:["Pillar 4 · Investment","Track what you've invested and what it's worth now."],
   protection:["Pillar 5 · Protection","Track insurance and coverage that protect you financially."]
+  
 };
 document.querySelectorAll(".navbtn").forEach(btn=>{
   btn.addEventListener("click", ()=> {
@@ -709,6 +715,7 @@ document.body.addEventListener("click", e=>{
 /* Period toggles */
 function wireToggle(containerId, applyFn){
   const container = document.getElementById(containerId);
+  if(!container) return;
   container.querySelectorAll("button").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       container.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
@@ -720,53 +727,38 @@ function wireToggle(containerId, applyFn){
 wireToggle("dash-period-toggle", p=>{ dashPeriod = p; renderFlowChart(); });
 wireToggle("report-period-toggle", p=>{ reportPeriod = p; renderReport(); });
 
-/* Toolbar: export / import / clear */
-document.getElementById("btn-clear").addEventListener("click", ()=>{
-  if(!confirm("Clear all data in this tracker? This cannot be undone (export first if you want a backup).")) return;
-  state.income = []; state.expenses = []; state.budgets = {};
-  state.goals = []; state.deposits = []; state.investments = []; state.protection = [];
-  toast("All data cleared");
-  renderAll();
-});
+/* ================= UTILITIES ================= */
+// Helper function to get today's local date for form inputs (YYYY-MM-DD)
+function todayISO() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().split("T")[0];
+}
 
-document.getElementById("btn-export").addEventListener("click", ()=>{
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "ledgerloop-" + todayISO() + ".json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  toast("Data exported");
-});
+/* ================= LOCAL PERSISTENCE ================= */
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
-document.getElementById("file-import").addEventListener("change", e=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = evt=>{
-    try{
-      const data = JSON.parse(evt.target.result);
+function loadFromStorage() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const data = JSON.parse(stored);
       state.income = Array.isArray(data.income) ? data.income : [];
       state.expenses = Array.isArray(data.expenses) ? data.expenses : [];
-      state.budgets = data.budgets && typeof data.budgets==="object" ? data.budgets : {};
+      state.budgets = data.budgets && typeof data.budgets === "object" ? data.budgets : {};
       state.goals = Array.isArray(data.goals) ? data.goals : [];
       state.deposits = Array.isArray(data.deposits) ? data.deposits : [];
       state.investments = Array.isArray(data.investments) ? data.investments : [];
       state.protection = Array.isArray(data.protection) ? data.protection : [];
-      const allIds = [].concat(state.income,state.expenses,state.goals,state.deposits,state.investments,state.protection).map(x=>x.id||0);
-      uid = (allIds.length ? Math.max(...allIds) : 0) + 1;
-      toast("Data imported");
-      renderAll();
-    }catch(err){
-      alert("Could not read that file — please import a JSON file exported from this tracker.");
+      return true;
     }
-  };
-  reader.readAsText(file);
-  e.target.value = "";
-});
+  } catch (err) {
+    console.error("Failed to load state from storage", err);
+  }
+  return false;
+}
 
 /* Init */
 (function init(){
@@ -778,45 +770,145 @@ document.getElementById("file-import").addEventListener("change", e=>{
   if(restored) toast("Welcome back — your saved entries were restored");
   renderAll();
 })();
-/* ================= THEME TOGGLE ================= */
-const themeToggle = document.getElementById("theme-toggle");
-const themeIcon = document.getElementById("theme-icon");
-const themeText = document.getElementById("theme-text");
+/* ================= SETTINGS & THEME ================= */
+// Populate Profile Username
+const activeUser = localStorage.getItem("ledgerloop_session");
+if(document.getElementById("set-username")) {
+  document.getElementById("set-username").value = activeUser || "Local User";
+}
 
+// Theme Logic via Settings Toggle
 function setTheme(isDark) {
   document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
   localStorage.setItem("ledgerloop_theme", isDark ? "dark" : "light");
   
-  if (themeToggle) {
-    themeText.textContent = isDark ? "Light Mode" : "Dark Mode";
-    themeIcon.innerHTML = isDark
-      ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
-      : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-  }
-
-  // Update Chart.js default colors so charts are readable in dark mode
-  if (typeof Chart !== "undefined") {
+  // Update Chart colors
+  if (typeof Chart !== "undefined" && Chart.defaults) {
     Chart.defaults.color = isDark ? "#A0A0A0" : "#726B5A";
     Chart.defaults.borderColor = isDark ? "#3D3D3D" : "#E9E0C6";
-    // Re-render charts to apply the new grid and text colors
     renderAll();
   }
 }
 
-// 1. Check for saved user preference, fallback to system preference
+// Initial Theme Check
 const savedTheme = localStorage.getItem("ledgerloop_theme");
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 const isDarkInitial = savedTheme === "dark" || (!savedTheme && prefersDark);
-
-// 2. Apply theme on load
 setTheme(isDarkInitial);
 
-// 3. Listen for clicks
-if (themeToggle) {
-  themeToggle.addEventListener("click", () => {
-    const currentlyDark = document.documentElement.getAttribute("data-theme") === "dark";
-    setTheme(!currentlyDark);
+// Wire Settings Theme Buttons
+const themeToggleRow = document.getElementById("settings-theme-toggle");
+if(themeToggleRow) {
+  const btns = themeToggleRow.querySelectorAll("button");
+  // Set initial active state
+  btns.forEach(b => b.classList.toggle("active", b.dataset.period === (isDarkInitial ? "dark" : "light")));
+  
+  btns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      btns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      setTheme(btn.dataset.period === "dark");
+    });
   });
 }
-})();
 
+// Currency Selector (Visual state persistence)
+const currencySelect = document.getElementById("set-currency");
+if(currencySelect) {
+  currencySelect.value = localStorage.getItem("ledgerloop_currency") || "PHP";
+  currencySelect.addEventListener("change", (e) => {
+    localStorage.setItem("ledgerloop_currency", e.target.value);
+    toast("Currency formatting will apply on next reload");
+  });
+}
+/* ================= DATA MANAGEMENT (SETTINGS) ================= */
+// Move clear/export/import logic exclusively to the settings buttons
+document.getElementById("btn-set-clear")?.addEventListener("click", () => {
+  if(!confirm("Clear all data in this tracker? This cannot be undone (export first if you want a backup).")) return;
+  state.income = []; state.expenses = []; state.budgets = {};
+  state.goals = []; state.deposits = []; state.investments = []; state.protection = [];
+  toast("All data cleared");
+  renderAll();
+});
+
+document.getElementById("btn-set-export")?.addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ledgerloop-backup-" + todayISO() + ".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast("Backup exported");
+});
+
+document.getElementById("file-set-import")?.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    try {
+      const data = JSON.parse(evt.target.result);
+      state.income = Array.isArray(data.income) ? data.income : [];
+      state.expenses = Array.isArray(data.expenses) ? data.expenses : [];
+      state.budgets = data.budgets && typeof data.budgets==="object" ? data.budgets : {};
+      state.goals = Array.isArray(data.goals) ? data.goals : [];
+      state.deposits = Array.isArray(data.deposits) ? data.deposits : [];
+      state.investments = Array.isArray(data.investments) ? data.investments : [];
+      state.protection = Array.isArray(data.protection) ? data.protection : [];
+      toast("Backup imported successfully");
+      renderAll();
+    } catch(err) {
+      alert("Could not read that file — please import a JSON file exported from this tracker.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+/* ================= TOPBAR ACTIONS (CSV & PRINT) ================= */
+// Print Ledger
+document.getElementById("btn-print-ledger")?.addEventListener("click", () => {
+  showView("transactions"); // Switch to transactions view automatically
+  setTimeout(() => window.print(), 300); // Wait for render, then trigger print dialog
+});
+
+// Export to Excel (.csv)
+document.getElementById("btn-export-csv")?.addEventListener("click", () => {
+  let all = [];
+  state.income.forEach(i => all.push({ date: i.date, type: "Income", desc: i.source, cat: i.category, amount: i.amount, sign: 1 }));
+  state.expenses.forEach(e => all.push({ date: e.date, type: "Expense", desc: e.description, cat: e.category, amount: e.amount, sign: -1 }));
+  state.deposits.forEach(d => {
+    const g = state.goals.find(x => x.id === d.goalId);
+    all.push({ date: d.date, type: "Deposit", desc: "Goal Deposit", cat: g ? g.name : "(deleted)", amount: d.amount, sign: -1 });
+  });
+  
+  all.sort((a, b) => b.date.localeCompare(a.date));
+  
+  if(!all.length) {
+    toast("No transactions to export yet.");
+    return;
+  }
+
+  let csv = "Date,Type,Description,Category,Amount\n";
+  all.forEach(t => {
+    const prefix = t.sign > 0 ? "" : "-";
+    const desc = `"${String(t.desc).replace(/"/g, '""')}"`;
+    const cat = `"${String(t.cat).replace(/"/g, '""')}"`;
+    csv += `${t.date},${t.type},${desc},${cat},${prefix}${t.amount}\n`;
+  });
+  
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "LedgerLoop-Transactions-" + todayISO() + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast("Ledger exported to Excel (.csv)");
+});
+})();
