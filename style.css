@@ -415,3 +415,46 @@ button:active, .btn:active, a.btn:active {
 .view {
   animation: fadeIn 0.3s ease-out forwards;
 }
+.row-edit{
+    background:#2F6B4E;
+    color:white;
+    border:none;
+    padding:5px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-right:5px;
+}
+
+.row-del{
+    background:#9B3A2C;
+    color:white;
+    border:none;
+    padding:5px 10px;
+    border-radius:6px;
+    cursor:pointer;
+}
+.row-edit{
+    background: var(--navy);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:6px 12px;
+    margin-right:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.2s;
+}
+
+.row-edit:hover{
+    opacity:.9;
+}
+
+.row-del{
+    background:var(--red);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:6px 12px;
+    cursor:pointer;
+    font-weight:600;
+}
