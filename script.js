@@ -398,7 +398,16 @@ function renderIncomeTable(){
       <td>${escapeHtml(r.source)}</td>
       <td><span class="tag">${escapeHtml(r.category)}</span></td>
       <td class="num">${money(r.amount)}</td>
-      <td><button class="row-del" data-kind="income" data-id="${r.id}">Remove</button></td>
+      <td>
+  <button class="row-edit" data-kind="income" data-id="${r.id}">
+    Edit
+  </button>
+
+  <button class="row-del" data-kind="income" data-id="${r.id}">
+    Remove
+  </button>
+</td>
+
     </tr>`).join("") : `<tr class="empty-row"><td colspan="5">No income yet. Add your first entry above.</td></tr>`;
   const total = state.income.reduce((a,b)=>a+b.amount,0);
   document.getElementById("income-total-tag").textContent = "Total " + money(total);
@@ -413,7 +422,15 @@ function renderExpenseTable(){
       <td>${escapeHtml(r.description)}</td>
       <td><span class="tag">${escapeHtml(r.category)}</span></td>
       <td class="num">${money(r.amount)}</td>
-      <td><button class="row-del" data-kind="expense" data-id="${r.id}">Remove</button></td>
+      <td>
+  <button class="row-edit" data-kind="expense" data-id="${r.id}">
+    Edit
+  </button>
+
+  <button class="row-del" data-kind="expense" data-id="${r.id}">
+    Remove
+  </button>
+</td>
     </tr>`).join("") : `<tr class="empty-row"><td colspan="5">No expenses yet. Add your first entry above.</td></tr>`;
   const total = state.expenses.reduce((a,b)=>a+b.amount,0);
   document.getElementById("expense-total-tag").textContent = "Total " + money(total);
@@ -440,18 +457,42 @@ function renderBudgetList(){
 
 function renderGoalsList(){
   const el = document.getElementById("goals-list");
-  if(!state.goals.length){ el.innerHTML = `<p style="font-size:12.5px;color:var(--ink-soft);">No goals yet. Create one above.</p>`; return; }
-  el.innerHTML = state.goals.map(g=>{
-    const pct = g.target>0 ? Math.min(100,(g.current/g.target)*100) : 0;
-    const daysLeft = Math.ceil((parseDate(g.deadline) - new Date())/(1000*3600*24));
-    return `<div class="goal-card">
-      <div class="top">
-        <h4>${escapeHtml(g.name)}</h4>
-        <span style="font-size:12.5px; font-weight:700; color:var(--navy);">${pct.toFixed(0)}%</span>
+
+  if(!state.goals.length){
+    el.innerHTML = `<p style="font-size:12.5px;color:var(--ink-soft);">No goals yet. Create one above.</p>`;
+    return;
+  }
+
+  el.innerHTML = state.goals.map(g => {
+    const pct = g.target > 0 ? Math.min(100,(g.current/g.target)*100) : 0;
+
+    return `
+      <div class="goal-card">
+        <div class="top">
+          <h4>${escapeHtml(g.name)}</h4>
+
+          <div style="display:flex; gap:8px;">
+            <button class="goal-edit btn-small"
+                    data-id="${g.id}">
+              Edit
+            </button>
+
+            <button class="goal-delete btn-small danger"
+                    data-id="${g.id}">
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <div class="meta">
+          ${money(g.current)} of ${money(g.target)}
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill good" style="width:${pct}%"></div>
+        </div>
       </div>
-      <div class="meta">${money(g.current)} of ${money(g.target)} · ${daysLeft>=0 ? daysLeft+" days left" : "deadline passed"} (${fmtDate(g.deadline)})</div>
-      <div class="progress-track"><div class="progress-fill good" style="width:${pct}%"></div></div>
-    </div>`;
+    `;
   }).join("");
 }
 
@@ -485,7 +526,15 @@ function renderInvestTable(){
       <td class="num">${money(r.invested)}</td>
       <td class="num">${money(r.current)}</td>
       <td class="num" style="color:${ret>=0?'var(--green)':'var(--red)'}; font-weight:700;">${ret>=0?"+":""}${ret.toFixed(1)}%</td>
-      <td><button class="row-del" data-kind="invest" data-id="${r.id}">Remove</button></td>
+      <td>
+  <button class="row-edit" data-kind="invest" data-id="${r.id}">
+    Edit
+  </button>
+
+  <button class="row-del" data-kind="invest" data-id="${r.id}">
+    Remove
+  </button>
+</td>
     </tr>`;
   }).join("") : `<tr class="empty-row"><td colspan="6">No investments yet. Use the form above.</td></tr>`;
   const total = state.investments.reduce((a,b)=>a+b.current,0);
@@ -502,7 +551,15 @@ function renderProtectTable(){
       <td class="num">${money(r.coverage)}</td>
       <td class="num">${money(r.premium)}</td>
       <td>${fmtDate(r.renewal)}</td>
-      <td><button class="row-del" data-kind="protect" data-id="${r.id}">Remove</button></td>
+      <td>
+  <button class="row-edit" data-kind="protect" data-id="${r.id}">
+    Edit
+  </button>
+
+  <button class="row-del" data-kind="protect" data-id="${r.id}">
+    Remove
+  </button>
+</td>
     </tr>`).join("") : `<tr class="empty-row"><td colspan="6">No protection plans yet. Use the form above.</td></tr>`;
   const total = state.protection.reduce((a,b)=>a+b.coverage,0);
   document.getElementById("protect-total-tag").textContent = "Coverage " + money(total);
@@ -695,6 +752,73 @@ document.getElementById("form-protect").addEventListener("submit", e=>{
 
 /* Delete row handlers (event delegation) */
 document.body.addEventListener("click", e=>{
+
+	const editBtn = e.target.closest(".row-edit");
+
+if(editBtn){
+
+  const id = parseInt(editBtn.dataset.id);
+  const kind = editBtn.dataset.kind;
+
+  if(kind === "invest"){
+
+    const item = state.investments.find(i => i.id === id);
+    if(!item) return;
+
+    const name = prompt("Investment Name:", item.name);
+    if(name === null) return;
+
+    const invested = parseFloat(
+      prompt("Amount Invested:", item.invested)
+    );
+
+    const current = parseFloat(
+      prompt("Current Value:", item.current)
+    );
+
+    if(isNaN(invested) || isNaN(current)) return;
+
+    item.name = name;
+    item.invested = invested;
+    item.current = current;
+
+    toast("Investment updated");
+    renderAll();
+  }
+  
+    if(kind === "protect"){
+
+    const item = state.protection.find(p => p.id === id);
+    if(!item) return;
+
+    const provider = prompt(
+      "Provider:",
+      item.provider
+    );
+
+    if(provider === null) return;
+
+    const coverage = parseFloat(
+      prompt("Coverage Amount:", item.coverage)
+    );
+
+    const premium = parseFloat(
+      prompt("Monthly Premium:", item.premium)
+    );
+
+    if(isNaN(coverage) || isNaN(premium)) return;
+
+    item.provider = provider;
+    item.coverage = coverage;
+    item.premium = premium;
+
+    toast("Protection plan updated");
+    renderAll();
+  }
+
+  return;
+}
+
   const btn = e.target.closest(".row-del");
   if(!btn) return;
   const id = parseInt(btn.dataset.id,10);
@@ -710,6 +834,110 @@ document.body.addEventListener("click", e=>{
   if(kind==="protect") state.protection = state.protection.filter(r=>r.id!==id);
   toast("Entry removed");
   renderAll();
+});
+
+
+document.body.addEventListener("click", e => {
+
+    const editBtn = e.target.closest(".row-edit");
+    if (!editBtn) return;
+
+    const id = parseInt(editBtn.dataset.id);
+    const kind = editBtn.dataset.kind;
+
+    if (kind === "income") {
+
+        const item = state.income.find(x => x.id === id);
+        if (!item) return;
+
+        const source = prompt("Source:", item.source);
+        if (source === null) return;
+
+        const amount = parseFloat(
+            prompt("Amount:", item.amount)
+        );
+
+        if (isNaN(amount)) return;
+
+        item.source = source;
+        item.amount = amount;
+
+        toast("Income updated");
+        renderAll();
+    }
+
+    if (kind === "expense") {
+
+        const item = state.expenses.find(x => x.id === id);
+        if (!item) return;
+
+        const description = prompt(
+            "Description:",
+            item.description
+        );
+
+        if (description === null) return;
+
+        const amount = parseFloat(
+            prompt("Amount:", item.amount)
+        );
+
+        if (isNaN(amount)) return;
+
+        item.description = description;
+        item.amount = amount;
+
+        toast("Expense updated");
+        renderAll();
+    }
+
+});
+
+document.body.addEventListener("click", (e) => {
+
+  // Edit Goal
+  if(e.target.classList.contains("goal-edit")) {
+
+    const id = parseInt(e.target.dataset.id);
+    const goal = state.goals.find(g => g.id === id);
+
+    if(!goal) return;
+
+    const newName = prompt("Goal Name:", goal.name);
+    if(newName === null) return;
+
+    const newTarget = parseFloat(
+      prompt("Target Amount:", goal.target)
+    );
+
+    if(isNaN(newTarget)) return;
+
+    goal.name = newName;
+    goal.target = newTarget;
+
+    renderAll();
+    toast("Goal updated");
+  }
+
+  // Delete Goal
+  if(e.target.classList.contains("goal-delete")) {
+
+    const id = parseInt(e.target.dataset.id);
+
+    if(!confirm("Delete this goal and all related deposits?")) {
+      return;
+    }
+
+    state.goals = state.goals.filter(g => g.id !== id);
+
+    state.deposits = state.deposits.filter(
+      d => d.goalId !== id
+    );
+
+    renderAll();
+    toast("Goal deleted");
+  }
+
 });
 
 /* Period toggles */
@@ -823,12 +1051,28 @@ if(currencySelect) {
 }
 /* ================= DATA MANAGEMENT (SETTINGS) ================= */
 // Move clear/export/import logic exclusively to the settings buttons
-document.getElementById("btn-set-clear")?.addEventListener("click", () => {
-  if(!confirm("Clear all data in this tracker? This cannot be undone (export first if you want a backup).")) return;
-  state.income = []; state.expenses = []; state.budgets = {};
-  state.goals = []; state.deposits = []; state.investments = []; state.protection = [];
-  toast("All data cleared");
+document.getElementById("clear-data-btn")?.addEventListener("click", () => {
+  if (!confirm("Clear all data in this tracker? This cannot be undone.")) return;
+
+  // Reset all stored data
+  state.income = [];
+  state.expenses = [];
+  state.budgets = {};
+  state.goals = [];
+  state.deposits = [];
+  state.investments = [];
+  state.protection = [];
+
+  // Save empty state
+  localStorage.removeItem(STORAGE_KEY);
+
+  // Reset IDs
+  uid = 1;
+
+  // Re-render everything
   renderAll();
+
+  toast("All data cleared successfully");
 });
 
 document.getElementById("btn-set-export")?.addEventListener("click", () => {
