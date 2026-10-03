@@ -63,7 +63,7 @@
     </div>
   </div>
 
-  <script>
+<script>
     function toggleView(view) {
       document.getElementById('view-login').style.display = view === 'login' ? 'block' : 'none';
       document.getElementById('view-register').style.display = view === 'register' ? 'block' : 'none';
@@ -76,6 +76,7 @@
 
     document.getElementById('form-register').addEventListener('submit', (e) => {
       e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim(); // Capture Full Name
       const user = document.getElementById('reg-user').value.trim();
       const pass = document.getElementById('reg-pass').value.trim();
       
@@ -84,12 +85,16 @@
         return;
       }
       
-      users.push({ username: user, password: pass });
+      // Save name alongside username and password
+      users.push({ name: name, username: user, password: pass });
       localStorage.setItem('ledgerloop_users', JSON.stringify(users));
       
-      // Auto-login after registration
+      // Auto-login and save details for the Settings tab
       localStorage.setItem('ledgerloop_session', user);
-      window.location.href = 'index.html';
+      localStorage.setItem('ledgerloop_user_name', name); 
+      
+      // Redirect to the main app, not index
+      window.location.href = 'app.html';
     });
 
     document.getElementById('form-login').addEventListener('submit', (e) => {
@@ -100,8 +105,12 @@
       const foundUser = users.find(u => u.username === user && u.password === pass);
       
       if (foundUser) {
+        // Log in and set session details
         localStorage.setItem('ledgerloop_session', user);
-        window.location.href = 'index.html';
+        localStorage.setItem('ledgerloop_user_name', foundUser.name || user);
+        
+        // Redirect to the main app, not index
+        window.location.href = 'app.html';
       } else {
         document.getElementById('login-error').textContent = 'Invalid username or password.';
       }
