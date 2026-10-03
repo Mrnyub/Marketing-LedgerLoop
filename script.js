@@ -11,17 +11,36 @@ if (!sessionUser) {
 // Make the storage key unique to the logged-in user
 const STORAGE_KEY = "ledgerloop_data_" + sessionUser;
 
-// Handle the Logout button click
+// --- USER-SPECIFIC VAULTS INITIALIZATION ---
+// Bind vaults to the unique user storage key to prevent data crossover
+let vaults = JSON.parse(localStorage.getItem("ledgerloop_vaults_" + sessionUser)) || [];
+
+// Handle the Logout button click & App Initialization on DOM Load
 document.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = document.getElementById("btn-logout");
+  // 1. Fixed the ID to match your sidebar HTML ("logout-btn" instead of "btn-logout")
+  const logoutBtn = document.getElementById("logout-btn"); 
+  
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      
+      // 2. Clear the main user session
       localStorage.removeItem("ledgerloop_session");
-      window.location.href = "login.html";
+      
+      // 3. Clear Google Auth data (since we added Google Sign-In earlier)
+      localStorage.removeItem("ledgerloop_user_email");
+      localStorage.removeItem("ledgerloop_user_picture");
+      
+      // 4. Redirect back to your public landing page
+      window.location.href = "index.html"; 
     });
   }
-});
 
+  // CRITICAL: Force vaults to render immediately when the page loads/refreshes
+  if (typeof renderVaults === 'function') {
+    renderVaults();
+  }
+});
 
 /* State */
 const state = {
@@ -358,12 +377,17 @@ function renderReportChart(){
 }
 
 /* Dashboard stats */
+/* Dashboard stats */
 function renderDashboardStats(){
   const income = state.income.filter(i=>isThisMonth(i.date)).reduce((a,b)=>a+b.amount,0);
   const expense = state.expenses.filter(i=>isThisMonth(i.date)).reduce((a,b)=>a+b.amount,0);
   const net = income - expense;
   const rate = income>0 ? (net/income*100) : 0;
-  const savings = state.goals.reduce((a,g)=>a+g.current,0);
+  
+  // UPDATE: Read directly from the global vaults array instead of localStorage
+  const savings = vaults.reduce((a,v) => a + Number(v.balance), 0); 
+  const vaultCount = vaults.length;
+
   const investInvested = state.investments.reduce((a,i)=>a+i.invested,0);
   const investCurrent = state.investments.reduce((a,i)=>a+i.current,0);
   const protect = state.protection.reduce((a,p)=>a+p.coverage,0);
@@ -376,8 +400,10 @@ function renderDashboardStats(){
   const netEl = document.getElementById("stat-net");
   netEl.style.color = net>=0 ? "var(--green)" : "var(--red)";
   document.getElementById("stat-rate").textContent = (income>0? rate.toFixed(0) : "0") + "%";
+  
   document.getElementById("stat-savings").textContent = money(savings);
-  document.getElementById("stat-savings-d").textContent = state.goals.length + " active goal" + (state.goals.length===1?"":"s");
+  document.getElementById("stat-savings-d").textContent = `Across ${vaultCount} vault${vaultCount === 1 ? '' : 's'}`;
+  
   document.getElementById("stat-invest").textContent = money(investCurrent);
   const gain = investCurrent - investInvested;
   const investD = document.getElementById("stat-invest-d");
@@ -385,7 +411,6 @@ function renderDashboardStats(){
   investD.className = "delta " + (gain>=0?"up":"down");
   document.getElementById("stat-protect").textContent = money(protect);
 }
-
 /* Tables */
 function fmtDate(s){ return parseDate(s).toLocaleDateString("en-US",{month:"short", day:"numeric", year:"numeric"}); }
 
@@ -999,12 +1024,58 @@ function loadFromStorage() {
   renderAll();
 })();
 /* ================= SETTINGS & THEME ================= */
+/* ================= SETTINGS & THEME ================= */
 // Populate Profile Username
-const activeUser = localStorage.getItem("ledgerloop_session");
-if(document.getElementById("set-username")) {
-  document.getElementById("set-username").value = activeUser || "Local User";
+function renderProfile() {
+  const localName = localStorage.getItem("ledgerloop_user_name");
+  const activeSession = localStorage.getItem("ledgerloop_session");
+
+  if(document.getElementById("set-username")) {
+    document.getElementById("set-username").value = localName ? `${localName} (@${activeSession})` : "Local User";
+  }
 }
 
+// Initial render on load
+renderProfile();
+
+// Edit Profile & Password Logic
+const btnEditProfile = document.getElementById("btn-edit-profile");
+if (btnEditProfile) {
+  btnEditProfile.addEventListener("click", () => {
+    const activeSession = localStorage.getItem("ledgerloop_session");
+    let users = JSON.parse(localStorage.getItem("ledgerloop_users")) || [];
+    
+    // Find the current logged-in user in the local database
+    let currentUser = users.find(u => u.username === activeSession);
+    
+    if (!currentUser) {
+      if(typeof toast === 'function') toast("Error: User profile not found.");
+      return;
+    }
+
+    // 1. Prompt for a new Name
+    const newName = prompt("Enter your new Full Name:", currentUser.name || activeSession);
+    if (newName === null) return; // User cancelled
+    
+    // 2. Prompt for a new Password
+    const newPassword = prompt("Enter a new password (leave blank to keep current):", "");
+    if (newPassword === null) return; // User cancelled
+
+    // Apply the changes
+    currentUser.name = newName.trim() || currentUser.name; // Keep old name if left totally blank
+    if (newPassword.trim() !== "") {
+      currentUser.password = newPassword.trim();
+    }
+
+    // Save changes back to local storage
+    localStorage.setItem("ledgerloop_users", JSON.stringify(users));
+    localStorage.setItem("ledgerloop_user_name", currentUser.name);
+
+    // Refresh the UI and notify the user
+    renderProfile();
+    if(typeof toast === 'function') toast("Profile updated successfully!");
+  });
+}
 // Theme Logic via Settings Toggle
 function setTheme(isDark) {
   document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
@@ -1156,3 +1227,122 @@ document.getElementById("btn-export-csv")?.addEventListener("click", () => {
   toast("Ledger exported to Excel (.csv)");
 });
 })();
+// 1. Initialize vaults array from localStorage using the active session
+// Fetch the session specifically for this section to prevent scope errors
+const activeSession = localStorage.getItem('ledgerloop_session');
+let vaults = JSON.parse(localStorage.getItem('ledgerloop_vaults_' + activeSession)) || [];
+
+// If your app uses a central state object, make sure vaults are attached:
+if (typeof state !== 'undefined') {
+  state.vaults = vaults;
+}
+
+// 2. Handle Add Vault Form Submission
+const formVault = document.getElementById('form-vault');
+if (formVault) {
+  formVault.addEventListener('submit', (e) => {
+    e.preventDefault(); 
+    
+    const name = document.getElementById('vault-name').value.trim();
+    const balance = parseFloat(document.getElementById('vault-balance').value);
+    
+    // Add to array
+    vaults.push({
+      id: Date.now(),
+      name: name,
+      balance: balance
+    });
+    
+    // Save using the specific session key
+    localStorage.setItem('ledgerloop_vaults_' + activeSession, JSON.stringify(vaults));
+    formVault.reset();
+    renderVaults();
+    
+    // Show a success notification
+    if(typeof toast === 'function') toast("Vault added successfully");
+  });
+}
+
+// 3. Function to Render Vaults and Update Top Stats
+function renderVaults() {
+  const list = document.getElementById('vaults-list');
+  if (!list) return;
+  
+  list.innerHTML = ''; 
+  let totalLiquidSavings = 0;
+  
+  if (vaults.length === 0) {
+    list.innerHTML = '<div style="padding: 12px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 4px; color: var(--ink-soft); font-size: 13px;">No vaults added yet.</div>';
+  } else {
+    vaults.forEach((vault, index) => {
+      totalLiquidSavings += Number(vault.balance);
+      
+      const vaultEl = document.createElement('div');
+      vaultEl.style.display = 'flex';
+      vaultEl.style.justifyContent = 'space-between';
+      vaultEl.style.alignItems = 'center';
+      vaultEl.style.padding = '12px';
+      vaultEl.style.background = 'var(--paper-2)';
+      vaultEl.style.border = '1px solid var(--rule)';
+      vaultEl.style.borderRadius = '4px';
+      vaultEl.style.marginBottom = '8px'; 
+      
+      vaultEl.innerHTML = `
+        <span style="font-weight: 600; color: var(--ink);">${vault.name}</span>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-weight: bold; color: var(--navy);">₱${Number(vault.balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+          <button class="row-del" onclick="deleteVault(${index})" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+        </div>
+      `;
+      list.appendChild(vaultEl);
+    });
+  }
+
+  // Update health stats and trigger dashboard synchronization
+  updateSavingsHealthStats(totalLiquidSavings);
+  if (typeof renderDashboardStats === 'function') {
+    renderDashboardStats();
+  }
+}
+
+// 4. Function to Delete a Vault
+window.deleteVault = function(index) {
+  if (confirm('Are you sure you want to remove this vault?')) {
+    vaults.splice(index, 1);
+    localStorage.setItem('ledgerloop_vaults_' + activeSession, JSON.stringify(vaults));
+    renderVaults();
+  }
+}
+
+// 5. Update the Savings Health Indicators at the top
+function updateSavingsHealthStats(totalLiquidSavings) {
+  // Update Total Liquid Savings Card
+  const statTotal = document.getElementById('stat-total-savings');
+  if (statTotal) {
+    statTotal.textContent = `₱${totalLiquidSavings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  }
+
+  // Pull directly from state.expenses to respect the logged-in user session
+  let expenses = typeof state !== 'undefined' ? state.expenses : [];
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  
+  let monthlySpend = expenses.reduce((sum, exp) => {
+    let expDate = new Date(exp.date);
+    if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
+      return sum + Number(exp.amount);
+    }
+    return sum;
+  }, 0);
+
+  let averageMonthlySpend = monthlySpend > 0 ? monthlySpend : 10000; 
+  let runwayMonths = (totalLiquidSavings / averageMonthlySpend).toFixed(1);
+  
+  const statRunway = document.getElementById('stat-runway');
+  if (statRunway) {
+    statRunway.textContent = `${runwayMonths} Months`;
+    if (runwayMonths < 3) statRunway.style.color = 'var(--red)';
+    else if (runwayMonths < 6) statRunway.style.color = 'var(--brass-dark)';
+    else statRunway.style.color = 'var(--green)';
+  }
+}
