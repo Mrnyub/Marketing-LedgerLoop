@@ -114,15 +114,50 @@
 
     <!-- ============ DASHBOARD ============ -->
     <section class="view active" id="view-dashboard">
-      <div class="stat-row">
-        <div class="stat income"><div class="label">Income this month</div><div class="value" id="stat-income">₱0</div><div class="delta" id="stat-income-d">—</div></div>
-        <div class="stat expense"><div class="label">Spending this month</div><div class="value" id="stat-expense">₱0</div><div class="delta" id="stat-expense-d">—</div></div>
-        <div class="stat"><div class="label">Net cash flow</div><div class="value" id="stat-net">₱0</div><div class="delta" id="stat-net-d">Income − spending</div></div>
-        <div class="stat savings"><div class="label">Savings rate</div><div class="value" id="stat-rate">0%</div><div class="delta">of income kept, this month</div></div>
-        <div class="stat savings"><div class="label">Total saved</div><div class="value" id="stat-savings">₱0</div><div class="delta" id="stat-savings-d">across all goals</div></div>
-        <div class="stat invest"><div class="label">Investment value</div><div class="value" id="stat-invest">₱0</div><div class="delta" id="stat-invest-d">—</div></div>
-        <div class="stat protect"><div class="label">Protection coverage</div><div class="value" id="stat-protect">₱0</div><div class="delta" id="stat-protect-d">total sum insured</div></div>
-      </div>
+   <div class="stat-row">
+  <div class="stat income">
+    <div class="label">Income this month</div>
+    <div class="value" id="stat-income">₱0</div>
+    <div class="delta" id="stat-income-d">—</div>
+  </div>
+  
+  <div class="stat expense">
+    <div class="label">Spending this month</div>
+    <div class="value" id="stat-expense">₱0</div>
+    <div class="delta" id="stat-expense-d">—</div>
+  </div>
+  
+  <div class="stat">
+    <div class="label">Net cash flow</div>
+    <div class="value" id="stat-net">₱0</div>
+    <div class="delta" id="stat-net-d">Income − spending</div>
+  </div>
+  
+  <div class="stat savings">
+    <div class="label">Savings rate</div>
+    <div class="value" id="stat-rate">0%</div>
+    <div class="delta">of income kept, this month</div>
+  </div>
+  
+  <!-- UPDATED SAVINGS CARD -->
+  <div class="stat savings">
+    <div class="label">Total liquid savings</div>
+    <div class="value" id="stat-savings">₱0</div>
+    <div class="delta" id="stat-savings-d">Across 0 vaults</div>
+  </div>
+  
+  <div class="stat invest">
+    <div class="label">Investment value</div>
+    <div class="value" id="stat-invest">₱0</div>
+    <div class="delta" id="stat-invest-d">—</div>
+  </div>
+  
+  <div class="stat protect">
+    <div class="label">Protection coverage</div>
+    <div class="value" id="stat-protect">₱0</div>
+    <div class="delta" id="stat-protect-d">total sum insured</div>
+  </div>
+</div>
 
       <div class="grid-2">
         <div class="panel">
@@ -217,6 +252,7 @@
         </div>
 
         <!-- Profile -->
+     <!-- Profile -->
         <div class="panel">
           <h3>Profile Details</h3>
           <p class="panel-sub">Manage your account information.</p>
@@ -226,9 +262,9 @@
             <input type="text" id="set-username" readonly disabled style="background:var(--paper-2); opacity:0.7; font-weight: 600;">
           </div>
           
-          <button class="btn" style="width:100%; justify-content:center;">Edit Profile</button>
+          <!-- Add the ID here -->
+          <button id="btn-edit-profile" class="btn" style="width:100%; justify-content:center;">Edit Profile</button>
         </div>
-      </div>
 
       <div class="grid-2">
       <!-- Data Management Panel -->
@@ -263,7 +299,7 @@
     </section>
 
     
-<!-- ============ GUIDELINES ============ -->
+  <!-- ============ GUIDELINES ============ -->
     <section class="view" id="view-guidelines">
       
       <div class="grid-2">
@@ -277,25 +313,26 @@
           </ul>
         </div>
 
-      <!-- Guidelines Panel -->
-      <div class="panel">
-        <h3 style="margin-bottom: 4px;">2. Reports & Data Export</h3>
-        <p class="panel-sub" style="margin-bottom: 16px;">Professional tools for presenting and documenting your financial records.</p>
-        
-        <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; color: var(--ink);">
-          <li>
-            <strong>Privacy-First Architecture:</strong> This application securely stores your data locally within your browser session. There are no external databases.
-          </li>
-          <li>
-            <strong>Print Summary of Transactions:</strong> Use the built-in print feature in your reports view to generate clean, physical or PDF documentation of your financial activity for client reviews or grading.
-          </li>
-          <li>
-            <strong>Export to Excel (.csv):</strong> Download your complete ledger data into a structured spreadsheet format for advanced external analysis and custom reporting.
-          </li>
-          <li>
-            <strong>Clear All:</strong> Use this strictly to wipe the current session state for a clean presentation run-through.
-          </li>
-        </ul>
+        <!-- Guidelines Panel -->
+        <div class="panel">
+          <h3 style="margin-bottom: 4px;">2. Reports & Data Export</h3>
+          <p class="panel-sub" style="margin-bottom: 16px;">Professional tools for presenting and documenting your financial records.</p>
+          
+          <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; color: var(--ink);">
+            <li>
+              <strong>Privacy-First Architecture:</strong> This application securely stores your data locally within your browser session. There are no external databases.
+            </li>
+            <li>
+              <strong>Print Summary of Transactions:</strong> Use the built-in print feature in your reports view to generate clean, physical or PDF documentation of your financial activity for client reviews or grading.
+            </li>
+            <li>
+              <strong>Export to Excel (.csv):</strong> Download your complete ledger data into a structured spreadsheet format for advanced external analysis and custom reporting.
+            </li>
+            <li>
+              <strong>Clear All:</strong> Use this strictly to wipe the current session state for a clean presentation run-through.
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="panel">
@@ -312,8 +349,8 @@
             <p style="margin: 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.5;">Every unit of outgoing capital.<br><br><strong>Includes:</strong> Food, transport, housing, and bills.<br><br><strong>Action:</strong> Establish monthly categorical budgets and track actual expenditures against them.</p>
           </div>
           <div style="background: var(--paper-2); padding: 16px; border-radius: var(--radius); border: 1px solid var(--rule);">
-            <h4 style="margin: 0 0 8px 0; font-family: var(--serif); color: var(--navy);">3. Savings & Goals</h4>
-            <p style="margin: 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.5;">Capital allocated for specific objectives.<br><br><strong>Includes:</strong> Emergency funds, tuition, or gadget funds.<br><br><strong>Action:</strong> Define target amounts, deadlines, and log deposits to track progress.</p>
+            <h4 style="margin: 0 0 8px 0; font-family: var(--serif); color: var(--navy);">3. Savings &amp; Vaults</h4>
+            <p style="margin: 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.5;">Liquid capital preservation and target accumulation.<br><br><strong>Includes:</strong> Bank accounts, digital wallets (GCash/Maya), emergency funds, and goals.<br><br><strong>Action:</strong> Register your physical/digital vaults and link them to specific financial goals.</p>
           </div>
           <div style="background: var(--paper-2); padding: 16px; border-radius: var(--radius); border: 1px solid var(--rule);">
             <h4 style="margin: 0 0 8px 0; font-family: var(--serif); color: var(--brass-dark);">4. Investment</h4>
@@ -359,8 +396,12 @@
               <td><code>(Net Cash Flow ÷ Total Income) × 100</code></td>
             </tr>
             <tr>
-              <td style="font-weight: 600;">Total Saved</td>
-              <td>Cumulative sum of the "current amount" across every active savings goal.</td>
+              <td style="font-weight: 600;">Total Liquid Savings</td>
+              <td>Cumulative sum of balances across all registered <strong>Savings Vaults</strong>.</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">Emergency Runway</td>
+              <td><code>Total Liquid Savings ÷ Average Monthly Spending</code> (measured in survival months).</td>
             </tr>
             <tr>
               <td style="font-weight: 600;">Investment Value</td>
@@ -372,7 +413,7 @@
             </tr>
             <tr>
               <td style="font-weight: 600;">Net Worth Trend</td>
-              <td>Running historical total of <code>(Savings + Investment Value)</code> as of each period.</td>
+              <td>Running historical total of <code>(Total Liquid Savings + Investment Value)</code> as of each period.</td>
             </tr>
           </tbody>
         </table>
@@ -380,8 +421,6 @@
       </div>
 
     </section>
-
-
     <!-- ============ SUMMARY OF TRANSACTIONS ============ -->
     <section class="view" id="view-transactions">
       <div class="panel">
@@ -496,32 +535,87 @@
     </section>
 
     <!-- ============ SAVINGS ============ -->
+ <!-- ============ SAVINGS & GOALS ============ -->
     <section class="view" id="view-savings">
-      <div class="panel">
-        <h3>Create a savings goal</h3>
-        <p class="panel-sub">A goal is a specific pot of money with a target and a deadline.</p>
-        <form class="entry-form" id="form-goal">
-          <div class="field"><label for="goal-name">Goal name</label><input type="text" id="goal-name" placeholder="e.g. Emergency fund" required></div>
-          <div class="field"><label for="goal-target">Target amount (₱)</label><input type="number" id="goal-target" min="0" step="0.01" required></div>
-          <div class="field"><label for="goal-deadline">Deadline</label><input type="date" id="goal-deadline" required></div>
-          <div class="field"><label for="goal-start">Starting amount (₱)</label><input type="number" id="goal-start" min="0" step="0.01" value="0"></div>
-          <button class="btn primary" type="submit">Create goal</button>
-        </form>
+      
+      <!-- NEW: Personal Savings Health Indicators -->
+      <div class="stat-row" style="margin-bottom: 24px;">
+        <div class="stat savings">
+          <div class="label">Total Liquid Savings</div>
+          <div class="value" id="stat-total-savings">₱0</div>
+          <div class="delta">Combined across all accounts</div>
+        </div>
+        <div class="stat">
+          <div class="label">Emergency Runway</div>
+          <div class="value" id="stat-runway" style="color: var(--green);">0 Months</div>
+          <div class="delta">Based on average monthly spending</div>
+        </div>
+        <div class="stat">
+          <div class="label">Savings Rate</div>
+          <div class="value" id="stat-savings-rate">0%</div>
+          <div class="delta">Of total income saved this month</div>
+        </div>
       </div>
 
+      <div class="grid-2">
+        <!-- NEW: Savings Vaults (Where the money is) -->
+        <div class="panel">
+          <h3>My Savings Vaults</h3>
+          <p class="panel-sub">Track where your money is physically stored (e.g., BDO, GCash, Piggy Bank).</p>
+          <form class="entry-form" id="form-vault" style="margin-bottom: 16px;">
+            <div class="field">
+              <label for="vault-name">Institution / Bank</label>
+              <input type="text" id="vault-name" placeholder="e.g. Maya Savings" required>
+            </div>
+            <div class="field">
+              <label for="vault-balance">Current Balance (₱)</label>
+              <input type="number" id="vault-balance" min="0" step="0.01" required>
+            </div>
+            <button class="btn primary" type="submit">Add Vault</button>
+          </form>
+          
+          <div id="vaults-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Vaults will render here via JS. Example placeholder: -->
+            <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 4px;">
+              <span style="font-weight: 600; color: var(--ink);">Cash on Hand</span>
+              <span style="font-weight: bold; color: var(--navy);">₱0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXISTING: Goal Creation (What the money is for) -->
+        <div class="panel">
+          <h3>Create a savings goal</h3>
+          <p class="panel-sub">Allocate your savings towards specific milestones.</p>
+          <form class="entry-form" id="form-goal">
+            <div class="field"><label for="goal-name">Goal name</label><input type="text" id="goal-name" placeholder="e.g. New Laptop" required></div>
+            <div class="field"><label for="goal-target">Target amount (₱)</label><input type="number" id="goal-target" min="0" step="0.01" required></div>
+            <div class="field"><label for="goal-deadline">Deadline</label><input type="date" id="goal-deadline" required></div>
+            <div class="field"><label for="goal-start">Starting amount (₱)</label><input type="number" id="goal-start" min="0" step="0.01" value="0"></div>
+            <button class="btn primary" type="submit" style="grid-column: 1 / -1;">Create goal</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Add Deposits & Progress Tracking -->
       <div class="panel">
-        <h3>Add a deposit to an existing goal</h3>
-        <form class="entry-form" id="form-deposit">
-          <div class="field"><label for="dep-goal">Goal</label><select id="dep-goal"></select></div>
+        <div class="panel-head">
+          <div>
+            <h3>Add a deposit</h3>
+            <p class="panel-sub">Log money added to your goals.</p>
+          </div>
+        </div>
+        <form class="entry-form" id="form-deposit" style="margin-bottom: 24px; border-bottom: 1px solid var(--rule-soft); padding-bottom: 24px;">
+          <div class="field"><label for="dep-goal">Target Goal</label><select id="dep-goal"><option>No goals yet — create one first</option></select></div>
           <div class="field"><label for="dep-amount">Deposit amount (₱)</label><input type="number" id="dep-amount" min="0" step="0.01" required></div>
           <div class="field"><label for="dep-date">Date</label><input type="date" id="dep-date" required></div>
           <button class="btn primary" type="submit">Add deposit</button>
         </form>
-      </div>
 
-      <div class="panel">
-        <h3>Goals &amp; progress</h3>
-        <div id="goals-list"></div>
+        <h3 style="margin-top: 24px;">Goals &amp; progress</h3>
+        <div id="goals-list">
+          <p style="color: var(--ink-soft); font-size: 13.5px;">No goals yet. Create one above.</p>
+        </div>
       </div>
 
       <div class="panel">
@@ -529,12 +623,13 @@
         <div style="overflow-x:auto;">
         <table>
           <thead><tr><th>Date</th><th>Goal</th><th class="num">Amount</th><th></th></tr></thead>
-          <tbody id="deposit-table"></tbody>
+          <tbody id="deposit-table">
+            <tr class="empty-row"><td colspan="4">No deposits yet.</td></tr>
+          </tbody>
         </table>
         </div>
       </div>
     </section>
-
     <!-- ============ INVESTMENTS ============ -->
     <section class="view" id="view-investments">
       <div class="panel">
